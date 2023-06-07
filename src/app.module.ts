@@ -15,7 +15,7 @@ import { User } from './api/user/user.entity';
     TypeOrmModule.forRoot({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      entities: ['dist/**/*.entity.{ts,js}', User],
+      autoLoadEntities: true,
       migrations: ['dist/migrations/*.{ts,js}'],
       migrationsTableName: 'typeorm_migrations',
       logger: 'file',
