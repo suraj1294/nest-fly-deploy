@@ -21,6 +21,6 @@ start-app:
 	docker compose --env-file docker.env up -d
 
 stop-app:
-	docker compose --env-file docker.env up -d
+	docker compose --env-file docker.env down
 
 
