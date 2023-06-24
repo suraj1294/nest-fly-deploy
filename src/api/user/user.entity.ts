@@ -1,9 +1,11 @@
+import { Exclude } from 'class-transformer';
 import {
   Entity,
   PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  DeleteDateColumn,
 } from 'typeorm';
 
 @Entity()
@@ -18,6 +20,7 @@ export class User {
   public email: string;
 
   @Column({ type: 'boolean', default: false })
+  @Exclude({ toPlainOnly: true })
   public isDeleted: boolean;
 
   /*
@@ -29,4 +32,12 @@ export class User {
 
   @UpdateDateColumn({ type: 'timestamp' })
   public updatedAt!: Date;
+
+  @DeleteDateColumn({ type: 'timestamp' })
+  @Exclude({ toPlainOnly: true })
+  public delete: Date;
+
+  constructor(item: Partial<User>) {
+    Object.assign(this, item);
+  }
 }

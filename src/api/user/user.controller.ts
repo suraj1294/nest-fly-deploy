@@ -1,11 +1,17 @@
 import {
   Body,
+  ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
+  HttpException,
+  HttpStatus,
   Inject,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CreateUserDto } from './user.dto';
 import { User } from './user.entity';
@@ -16,18 +22,48 @@ export class UserController {
   @Inject(UserService)
   private readonly service: UserService;
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get()
-  public getUsers(): Promise<User[]> {
+  async getUsers(): Promise<User[]> {
     return this.service.getUsers();
   }
 
+  @UseInterceptors(ClassSerializerInterceptor)
   @Get(':id')
-  public getUser(@Param('id', ParseIntPipe) id: number): Promise<User> {
-    return this.service.getUser(id);
+  async getUser(@Param('id', ParseIntPipe) id: number) {
+    const user = await this.service.getUser(id);
+    if (user === null) {
+      throw new NotFoundException({
+        status: HttpStatus.NOT_FOUND,
+        error: 'User Not Found',
+      });
+    }
+    return user;
   }
 
   @Post()
-  public createUser(@Body() body: CreateUserDto): Promise<User> {
+  async createUser(@Body() body: CreateUserDto): Promise<User> {
     return this.service.createUser(body);
+  }
+
+  @Delete(':id')
+  async deleteUser(@Param('id', ParseIntPipe) id: number) {
+    const deleteResult = await this.service.deleteUser(id);
+    if (deleteResult.affected) {
+      return {
+        status: 'ok',
+      };
+    } else {
+      throw new HttpException(
+        {
+          status: HttpStatus.NOT_FOUND,
+          error: 'User Not Found',
+        },
+        HttpStatus.FORBIDDEN,
+        {
+          cause: new Error('User Not Found'),
+        },
+      );
+    }
   }
 }
