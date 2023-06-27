@@ -3,7 +3,7 @@ services:
     image: postgres
     restart: always
     env_file:
-      - docker.env
+      - development.env
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USER}

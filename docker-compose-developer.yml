@@ -3,11 +3,14 @@ services:
     build:
       dockerfile: Dockerfile
       context: .
-      target: production
+      # Only will build development stage from our dockerfile
+      target: development
     volumes:
       - .:/usr/src/app
     env_file:
       - docker.env
+    # Run a command against the development stage of the image
+    command: npm run start:dev
     ports:
       - ${PORT}:3000
     depends_on:
